@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kerberos-webapp-krb5
+data:
+  krb5.conf: |
+    [libdefaults]
+      default_realm = EXAMPLE.COM
+      dns_lookup_realm = false
+      dns_lookup_kdc = false
+      rdns = false
+      ticket_lifetime = 24h
+      forwardable = true
+      default_tkt_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
+      default_tgs_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
+      permitted_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
+
+    [realms]
+      EXAMPLE.COM = {
+        kdc = dc01.example.com
+        kdc = dc02.example.com
+        admin_server = dc01.example.com
+      }
+
+    [domain_realm]
+      .example.com = EXAMPLE.COM
+      example.com = EXAMPLE.COM

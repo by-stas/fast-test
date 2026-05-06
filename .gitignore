@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+dist/
+out/
+coverage/
+
+# IDE/editor files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Node/Angular
+node_modules/
+.angular/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment/secrets
+.env
+.env.*
+*.keytab
+*.pfx
+*.pem
+
+# Kubernetes generated files
+deploy/k8s/generated/
