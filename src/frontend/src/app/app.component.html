@@ -1,0 +1,43 @@
+<main class="shell">
+  <section class="hero">
+    <p class="eyebrow">Windows Integrated Authentication</p>
+    <h1>Kerberos authenticated sample app</h1>
+    <p>
+      The browser negotiates Kerberos with the ASP.NET Core backend. Angular only
+      reads the authenticated session from <code>/api/me</code>.
+    </p>
+  </section>
+
+  <section class="card">
+    @if (loading()) {
+      <p>Loading authentication status...</p>
+    } @else if (error()) {
+      <h2>Authentication failed</h2>
+      <p>{{ error() }}</p>
+      <button type="button" (click)="refresh()">Retry</button>
+    } @else if (user(); as currentUser) {
+      <h2>Signed in</h2>
+      <dl>
+        <div>
+          <dt>Name</dt>
+          <dd>{{ currentUser.name || 'Unknown' }}</dd>
+        </div>
+        <div>
+          <dt>Authentication type</dt>
+          <dd>{{ currentUser.authenticationType || 'Unknown' }}</dd>
+        </div>
+        <div>
+          <dt>Authenticated</dt>
+          <dd>{{ currentUser.isAuthenticated ? 'Yes' : 'No' }}</dd>
+        </div>
+      </dl>
+
+      <details>
+        <summary>Claims returned by backend</summary>
+        <pre>{{ currentUser.claims | json }}</pre>
+      </details>
+
+      <button type="button" (click)="refresh()">Refresh</button>
+    }
+  </section>
+</main>

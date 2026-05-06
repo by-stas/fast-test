@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kerberos-webapp-api
+  labels:
+    app.kubernetes.io/name: kerberos-webapp
+    app.kubernetes.io/component: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kerberos-webapp
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kerberos-webapp
+        app.kubernetes.io/component: api
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: api
+          image: ghcr.io/example/kerberos-webapp-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Production
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: KRB5_CONFIG
+              value: /etc/krb5.conf
+            - name: KRB5_KTNAME
+              value: /etc/security/keytabs/app.keytab
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: krb5-config
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+              readOnly: true
+            - name: kerberos-keytab
+              mountPath: /etc/security/keytabs
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: krb5-config
+          configMap:
+            name: kerberos-webapp-krb5
+        - name: kerberos-keytab
+          secret:
+            secretName: kerberos-webapp-keytab
+            defaultMode: 0444
+        - name: tmp
+          emptyDir: {}
