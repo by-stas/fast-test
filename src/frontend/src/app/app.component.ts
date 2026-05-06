@@ -20,7 +20,7 @@ export class AppComponent {
   });
   protected readonly loading = computed(() => this.state().loading);
   protected readonly error = computed(() => this.state().error);
-  protected readonly user = computed(() => this.state().user ?? null);
+  protected readonly user = computed(() => this.state().authenticated ? this.state().user ?? null : null);
 
   protected refresh(): void {
     this.auth.refresh();
